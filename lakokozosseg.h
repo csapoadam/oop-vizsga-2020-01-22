@@ -11,6 +11,7 @@ protected:
 	int tulajdoniHanyad;
 public:
 	Tarstulajdonos(const std::string& nm, int th) : name(nm), tulajdoniHanyad(th) {}
+	virtual ~Tarstulajdonos() = default;
 	virtual void print() = 0;
 	virtual int getTulajdoniHanyad() {
 		return tulajdoniHanyad;

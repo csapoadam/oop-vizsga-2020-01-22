@@ -11,7 +11,7 @@
 // 2-es szinthez:
 // 
 // - A Tarstulajdonos osztaly:
-// ... eltarolja a tulajdonosok nevet es tulajdoni hanyadat.
+// ... tarolja a tulajdonos nevet es tulajdoni hanyadat (egesz szam, tizezredek szama).
 // ... van meg egy print() metodusa, ami nincs implementalva
 // ... absztrakt osztaly, ezert nem peldanyosithato
 
@@ -22,22 +22,23 @@
 // ... 2-es szinthez: implementalja a print() metodust (hogy mit ir ki, ahhoz ld. a Kozgyules.printJelenlevok() kimenetet)
 
 // - A Kozgyules osztaly:
-// ... 2-es szinthez eltarolja int-kent a kozgyules evszamat, honapjat es napjat
+// ... 2-es szinthez eltarolja int-ekkent a kozgyules evszamat, honapjat es napjat
 // ... 2-es szinthez eltarolja STL kontenerben a kozgyules resztvevoinek pointereit
 // ... 2-es szinthez megvalositja az addJelenlevo() metodust
 // ... 2-es szinthez megvalositja a printJelenlevok() metodust, amely az osszes jelenlevore meghivja sajat print() metodusat
 
-// - A Tarsashaz osztaly STL kontenerben, hozzadas sorrendjeben tarolja a tulajdonosokra hivatkozo pointereket
+// - A Tarsashaz osztaly:
+// ... STL kontenerben, hozzadas sorrendjeben tarolja a tulajdonosokra hivatkozo pointereket
 // ... 2-es szinthez a Tarstulajdonosok pointereit az addTulajdonos() metodussal lehet hozzaadni
-// ... 2-es szinthez megvalositja meg a holdKozgyules() metodust. Ez a metodust gondoskodik rola, hogy
+// ... 2-es szinthez megvalositja meg a holdKozgyules() metodust. Ez a metodus gondoskodik rola, hogy
 //     minden 2. pereskedo tulajdonos, es minden 3. bekes tulajdonos reszt vegyen a kozgyulesen (ehhez a kozgyules addJelenlevo() metodusat lehet hasznalni)
 
 // - 3-as szinthez:
 // Keszitsen a Kozgyules osztalyban egy printLetszam() metodust, amely a <numeric> header-ben talalhato
-// std::accumulate fuggveny segitsegevel kiirja a kozgyules letszamat.
+// std::accumulate fuggveny segitsegevel kiirja a kozgyulesen resztvevok tulajdonosi hanyadainak osszeget.
 // Figyelem: az std::accumulate BinaryOperation parametere egy kezileg definialt osztaly peldanya kell, hogy legyen.
 // a kezileg definialt osztaly neve legyen SumJelenlevos(). Ez az osztaly meg kell, hogy valositsa az alabbi metodust:
-// int operator()(int acc, Tarstulajdonos* tp)
+// int operator()(int acc, Tarstulajdonos* tp), ami visszaadja az acc es a tulajdonosi hanyad osszeget
 
 // 4-es szinthez:
 // Keszitsen Meghatalmazas osztalyt, amely nyilvantartja, hogy melyik meghatalmazo melyik meghatalmazottnak
@@ -47,11 +48,12 @@
 // Ezt kovetoen keszitse el a Kozgyules osztaly printJelenlevokWithProxies() metodusat ugy, hogy a 
 // jelenlevok tulajdoni hanyada mellett az osszes altaluk kepviselt tulajdoni hanyad is kiirasra keruljon.
 // A printJelenlevokWithProxies() metodusban szinten az std::accumulate() fuggvenyt hasznalja az eltarolt
-// meghatalmazas-lista / vector folott vegig iteralva. Ehhez szuksege lesz egy SumMeghatis() osztalyra is.
+// meghatalmazas-lista / vector folott vegig iteralva. Ehhez szuksege lesz egy SumMeghatis osztalyra is.
 
 // 5-os szinthez:
 // Valositsa meg a PereskedoTulajdonos osztaly orditozik() metodusat.
-// Ha egy kozgyulesen legalabb 2x orditoznak, a BekesTulajdonosoknak elmegy a kedvuk a reszveteltol,
+// A Kozgyules tarolja el az orditozok pointereit, ennek hozzaadasahoz keszitsen segedmetodust.
+// Ha egy kozgyulesen legalabb ketten orditoznak, a BekesTulajdonosoknak elmegy a kedvuk a reszveteltol,
 // es legkozelebb csak minden 4. BekesTulajdonos megy el a kozgyulesre.
 
 #define SZINT_2 1
@@ -62,7 +64,7 @@
 
 int main()
 {
-#if SZINT_2:
+#if SZINT_2
 
 	Tarstulajdonos* tulaj1 = new BekesTulajdonos("Kisimult P.", 1230);
 	Tarstulajdonos* tulaj2 = new PereskedoTulajdonos("Veszekedo I.", 2660);
@@ -73,7 +75,8 @@ int main()
 	Tarstulajdonos* tulaj7 = new PereskedoTulajdonos("Goromba B.", 970);
 	Tarstulajdonos* tulaj8 = new PereskedoTulajdonos("Kiabalos H.", 1220);
 	Tarstulajdonos* tulaj9 = new PereskedoTulajdonos("Duhongo K.", 1020);
-	Tarstulajdonos* tulaj10 = new PereskedoTulajdonos("Baratsagtalan P.", 840);
+	Tarstulajdonos* tulaj10 = new PereskedoTulajdonos("Baratsagtalan P.", 320);
+	Tarstulajdonos* tulaj11 = new BekesTulajdonos("Baratsagos A.", 520);
 
 	Tarsashaz chicago;
 	chicago.addTulajdonos(tulaj1);
@@ -86,6 +89,7 @@ int main()
 	chicago.addTulajdonos(tulaj8);
 	chicago.addTulajdonos(tulaj9);
 	chicago.addTulajdonos(tulaj10);
+	chicago.addTulajdonos(tulaj11);
 
 	Kozgyules kgy1(2019, 5, 12);
 	chicago.holdKozgyules(&kgy1);
@@ -99,16 +103,18 @@ int main()
 	std::cout << " Bekes tulajdonos : Sima O. - 1050 / 10 000" << std::endl;
 	std::cout << " Pereskedo tulajdonos : Goromba B. - 970 / 10 000" << std::endl;
 	std::cout << " Pereskedo tulajdonos : Duhongo K. - 1020 / 10 000" << std::endl;
+	std::cout << " Bekes tulajdonos: Baratsagos A. - 520 / 10 000" << std::endl;
 	std::cout << std::endl << std::endl << std::endl;
 
-#if SZINT_3:
+#if SZINT_3
 
 	kgy1.printLetszam(); // kiirja, hogy Letszam: 3040
 	std::cout << " ---------------------------- " << std::endl;
-	std::cout << " Elvart kimenet: 3040" << std::endl;
+	std::cout << " Elvart kimenet:" << std::endl;
+	std::cout << " Letszam: 3560" << std::endl;
 	std::cout << std::endl << std::endl << std::endl;
 
-# if SZINT_4:
+# if SZINT_4
 	
 	Kozgyules kgy2(2020, 1, 12);
 	chicago.holdKozgyules(&kgy2);
@@ -127,9 +133,10 @@ int main()
 	std::cout << " Bekes tulajdonos: Sima O. - 2650 / 10 000" << std::endl;
 	std::cout << " Pereskedo tulajdonos : Goromba B. - 970 / 10 000" << std::endl;
 	std::cout << " Pereskedo tulajdonos : Duhongo K. - 1020 / 10 000" << std::endl;
+	std::cout << " Bekes tulajdonos: Baratsagos A. - 520 / 10 000" << std::endl;
 	std::cout << std::endl << std::endl << std::endl;
 
-# if SZINT_5:
+# if SZINT_5
 	PereskedoTulajdonos * newPereskedo1 = new PereskedoTulajdonos("Vendeg a szomszedbol", 0);
 	PereskedoTulajdonos * newPereskedo2 = new PereskedoTulajdonos("Vendeg a szomszedbol felesege", 0);
 	newPereskedo1->orditozik(&kgy2);
