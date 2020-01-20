@@ -146,7 +146,8 @@ int main()
 	std::cout << " Pereskedo tulajdonos : Duhongo K. - 1020 / 10 000" << std::endl;
 	std::cout << std::endl << std::endl << std::endl;
 
-
+	delete newPereskedo1;
+	delete newPereskedo2;
 #endif
 
 #endif
